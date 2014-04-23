@@ -19,6 +19,13 @@ class FilesystemIterator extends \RecursiveIteratorIterator implements ReadableI
             ),
             $iteratorOptions
         );
+
+        $this->path = $path;
+    }
+
+    public function getPath()
+    {
+        return $path;
     }
 
     public function read()
