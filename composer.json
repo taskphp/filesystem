@@ -1,0 +1,19 @@
+{
+    "name": "task/filesystem",
+    "description": "Filesystem plugin for Task",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Mike Fisher",
+            "email": "mike@mbfisher.com"
+        }
+    ],
+    "require": {
+        "task/plugin": "1.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Task\\Plugin\\": "src/"
+        }
+    }
+}
