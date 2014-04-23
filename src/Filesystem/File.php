@@ -26,10 +26,14 @@ class File extends \SplFileObject implements Stream\ReadableInterface, Stream\Wr
         return $content;
     }
 
-    public function write($content)
+    public function write($data)
     {
+        if ($data instanceof File) {
+            $data = $data->read();
+        }
+
         $this->ftruncate(0);
-        $this->fwrite($content);
+        $this->fwrite($data);
         return $this;
     }
 
