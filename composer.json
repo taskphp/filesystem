@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "task/plugin": "1.0.0",
+        "task/plugin": "~1.0",
         "symfony/filesystem": "~2.4"
     },
     "autoload": {
