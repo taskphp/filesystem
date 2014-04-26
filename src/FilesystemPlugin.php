@@ -7,12 +7,13 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Task\Plugin\Filesystem\File;
 use Task\Plugin\Filesystem\FilesystemIterator;
+use Symfony\Component\Finder\Finder;
 
 class FilesystemPlugin extends Filesystem implements PluginInterface
 {
-    public function open($filename)
+    public function open($filename, $mode = 'r+')
     {
-        return new File($filename);
+        return new File($filename, $mode);
     }
 
     public function touch($filename, $time = null, $atime = null)
@@ -45,7 +46,7 @@ class FilesystemPlugin extends Filesystem implements PluginInterface
             }
         } elseif (is_dir($source)) {
             if (is_file($target)) {
-                throw new \RuntimeException("Cannot copy directory to file");
+                throw new \LogicException("Cannot copy directory to file");
             } else {
                 return $this->mirror($source, $target);
             }
@@ -54,39 +55,13 @@ class FilesystemPlugin extends Filesystem implements PluginInterface
         throw new FileNotFoundException("Could not copy $source to $target");
     }
 
-    public function copyTree($source, $target, array $include, array $exclude = [])
+    public function copyTree($baseDir, $target, Finder $finder)
     {
-        $target = rtrim($target, '/');
-        $source = rtrim($source, '/');
-
-        foreach ($iterator = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        ) as $file) {
+        foreach ($finder as $file) {
             if (!$file->isDir()) {
-                $path = substr($file->getPathname(), strlen("$source/"));
-                if ($this->match($include, $path)) {
-                    if ($this->match($exclude, $path)) {
-                    } else {
-                        $this->copy("$source/$path", "$target/$path");
-                    }
-                }
+                $path = substr($file->getPathname(), strlen("$baseDir/"));
+                $this->copy("$baseDir/$path", "$target/$path");
             }
         }
-    }
-
-    public function match($patterns, $match)
-    {
-        if (!is_array($patterns)) {
-            $patterns = [$patterns];
-        }
-
-        foreach ($patterns as $pattern) {
-            if (fnmatch($pattern, $match)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

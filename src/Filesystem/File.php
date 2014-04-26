@@ -6,10 +6,10 @@ use Task\Plugin\Stream;
 
 class File extends \SplFileObject implements Stream\ReadableInterface, Stream\WritableInterface
 {
-    public function __construct($filename)
+    public function __construct($filename, $mode = 'r+')
     {
         try {
-            parent::__construct($filename, 'r+');
+            parent::__construct($filename, $mode);
         } catch (\RuntimeException $ex) {
         }
     }
