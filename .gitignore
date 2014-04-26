@@ -2,4 +2,5 @@ composer.lock
 vendor/
 /coverage/
 coverage.xml
+coveralls-upload.json
 .env

@@ -2,16 +2,15 @@
 
 namespace Task\Plugin\Filesystem;
 
-use Task\Plugin\Stream;
+use Task\Plugin\Stream\WritableInterface;
+use Task\Plugin\Stream\ReadableInterface;
 
-class File extends \SplFileObject implements Stream\ReadableInterface, Stream\WritableInterface
+class File extends \SplFileObject implements ReadableInterface, WritableInterface
 {
     public function __construct($filename, $mode = 'r+')
     {
-        try {
-            parent::__construct($filename, $mode);
-        } catch (\RuntimeException $ex) {
-        }
+        touch($filename);
+        parent::__construct($filename, $mode);
     }
 
     public function read()
@@ -28,7 +27,7 @@ class File extends \SplFileObject implements Stream\ReadableInterface, Stream\Wr
 
     public function write($data)
     {
-        if ($data instanceof File) {
+        if ($data instanceof ReadableInterface) {
             $data = $data->read();
         }
 
@@ -48,7 +47,7 @@ class File extends \SplFileObject implements Stream\ReadableInterface, Stream\Wr
         return $this;
     }
 
-    public function pipe(Stream\WritableInterface $to)
+    public function pipe(WritableInterface $to)
     {
         return $to->write($this->read());
     }
