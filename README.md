@@ -1,6 +1,9 @@
 task/filesystem
 ===============
 
+[![Build Status](https://travis-ci.org/taskphp/filesystem.svg?branch=master)](https://travis-ci.org/taskphp/filesystem)
+[![Coverage Status](https://coveralls.io/repos/taskphp/filesystem/badge.png?branch=master)](https://coveralls.io/r/taskphp/filesystem?branch=master)
+
 Example
 =======
 ```php
