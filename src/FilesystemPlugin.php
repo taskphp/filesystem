@@ -18,10 +18,6 @@ class FilesystemPlugin extends Filesystem implements PluginInterface
 
     public function touch($filename, $time = null, $atime = null)
     {
-        if (!is_string($filename)) {
-            throw new \InvalidArgumentException("File name must be a string");
-        }
-
         parent::touch($filename, $time, $atime);
         return $this->open($filename);
     }

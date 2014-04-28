@@ -41,11 +41,6 @@ class FilesystemPluginSpec extends ObjectBehavior
         $file->getPathname()->shouldReturn($path);
     }
 
-    function it_should_throw_trying_to_touch_non_string()
-    {
-        $this->shouldThrow('InvalidArgumentException')->duringTouch(0);
-    }
-
     function it_should_list_a_directory()
     {
         $path = vfsStream::url('tmp');
