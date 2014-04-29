@@ -7,7 +7,6 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Task\Plugin\Filesystem\File;
 use Task\Plugin\Filesystem\FilesystemIterator;
-use Symfony\Component\Finder\Finder;
 
 class FilesystemPlugin extends Filesystem implements PluginInterface
 {
@@ -34,30 +33,31 @@ class FilesystemPlugin extends Filesystem implements PluginInterface
 
         if (is_file($source)) {
             if (is_dir($target)) {
-                return parent::copy($source, $target.DIRECTORY_SEPARATOR.basename($source), $override);
+                $target = $target.DIRECTORY_SEPARATOR.basename($source);
+                parent::copy($source, $target, $override);
+                return $this->open($target);
             } elseif (is_link($source)) {
-                return $this->symlink(readlink($source), $target);
+                $this->symlink(readlink($source), $target);
+                return $this->open($target);
             } else {
-                return parent::copy($source, $target, $override);
+                parent::copy($source, $target, $override);
+                return $this->open($target);
             }
         } elseif (is_dir($source)) {
             if (is_file($target)) {
                 throw new \LogicException("Cannot copy directory to file");
             } else {
-                return $this->mirror($source, $target);
+                $this->mirror($source, $target, null, ['override' => $override]);
+                return $this->ls($target);
             }
         }
 
         throw new FileNotFoundException("Could not copy $source to $target");
     }
 
-    public function copyTree($baseDir, $target, Finder $finder)
+    public function mirror($originDir, $targetDir, \Traversable $iterator = null, $options = [])
     {
-        foreach ($finder as $file) {
-            if (!$file->isDir()) {
-                $path = substr($file->getPathname(), strlen("$baseDir/"));
-                $this->copy("$baseDir/$path", "$target/$path");
-            }
-        }
+        parent::mirror($originDir, $targetDir, $iterator, $options);
+        return $this->ls($targetDir);
     }
 }

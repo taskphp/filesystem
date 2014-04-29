@@ -56,7 +56,9 @@ class FilesystemPluginSpec extends ObjectBehavior
         $dir = $this->_mkdir('test');
         $target = "$dir/source";
 
-        $this->copy($source, $dir);
+        $file = $this->copy($source, $dir);
+        $file->shouldHaveType('Task\Plugin\Filesystem\File');
+        $file->getPathname()->shouldReturn("$dir/source");
 
         expect($this->root->HasChild('test/source'))->toBe(true);
         expect(file_get_contents($target))->toBe('foo');
@@ -75,7 +77,9 @@ class FilesystemPluginSpec extends ObjectBehavior
 
         $target = "$tmp/target";
 
-        $this->copy($link, $target);
+        $file = $this->copy($link, $target);
+        $file->shouldHaveType('Task\Plugin\Filesystem\File');
+        $file->getPathname()->shouldReturn($target);
 
         expect(readlink($target))->toBe($source);
 
@@ -87,7 +91,9 @@ class FilesystemPluginSpec extends ObjectBehavior
         $source = $this->_touch('source', 'foo');
         $target = $this->_url('target');
 
-        $this->copy($source, $target);
+        $file = $this->copy($source, $target);
+        $file->shouldHaveType('Task\Plugin\Filesystem\File');
+        $file->getPathname()->shouldReturn($target);
 
         expect($this->root->hasChild('target'))->toBe(true);
         expect(file_get_contents($target))->toBe('foo');
@@ -115,7 +121,9 @@ class FilesystemPluginSpec extends ObjectBehavior
         $this->_touch('source/foo/bar', 'foo');
         $target = $this->_url('target');
 
-        $this->copy($source, $target);
+        $dir = $this->copy($source, $target);
+        $dir->shouldHaveType('Task\Plugin\Filesystem\FilesystemIterator');
+        $dir->getPath()->shouldReturn($target);
 
         expect($this->root->getChild('target')->getType())->toBe(vfsStreamContent::TYPE_DIR);
         expect($this->root->getChild('target/foo')->getType())->toBe(vfsStreamContent::TYPE_DIR);
@@ -127,7 +135,7 @@ class FilesystemPluginSpec extends ObjectBehavior
         $this->shouldThrow('Symfony\Component\Filesystem\Exception\FileNotFoundException')->duringCopy('nope', 'wow');
     }
 
-    function it_should_copy_tree()
+    function it_should_mirror()
     {
         $source = $this->_mkdir('source');
         $this->_touch('source/foo');
@@ -136,7 +144,7 @@ class FilesystemPluginSpec extends ObjectBehavior
 
         $finder = new Finder;
         $finder->name('foo')->in($source);
-        $this->copyTree($source, $target, $finder);
+        $this->mirror($source, $target, $finder);
 
         expect($this->root->hasChild('target/foo'))->toBe(true);
         expect($this->root->hasChild('target/bar'))->toBe(false);

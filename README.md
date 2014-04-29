@@ -51,34 +51,25 @@ Add to `composer.json`:
 Usage
 =====
 
-`Task\Plugin\FilesystemPlugin` extends Symfony's `Filesystem` component object, overring some methods and providing some new ones.
-
+`Task\Plugin\FilesystemPlugin` extends Symfony's `Filesystem` component object, overring some methods and providing some new ones. Many of these methods return streams which can be piped to other plugins.
 `open`
 ------
-
-`FilesystemPlugin::open($filename, $mode = 'r+')`
+`open($filename, $mode = 'r+')`
 
 Returns `Task\Plugin\Filesystem\File`, opened with the specified mode.
-
 `touch`
 -------
-
 `FilesystemPlugin::touch($filename, $time = null, $atime = null)`
 
 See Symfony's `Filesystem::touch` documentation for argument description. Returns `Task\Plugin\Filesystem\File`, opened with `r+`.
-
-
 `ls`
 ----
-
-`FilesystemPlugin::ls($dir)`
+`ls($dir)`
 
 Returns `Task\Plugin\Filesystem\FilesystemIterator`.
-
 `copy`
 ------
-
-`FilesystemPlugin::copy($source, $target, $override = false)`
+`copy($source, $target, $override = false)`
 
 Supports multiple operations, e.g.
 
@@ -87,31 +78,29 @@ Given:
 use Task\Plugin\FilesystemPlugin;
 $fs = new FilesystemPlugin;
 ```
-
 File to file:
-
 ```
 /
     foo
 ```
 ```php
-copy('foo', 'bar')
+# @return File('bar')
+$fs->copy('foo', 'bar')
 ```
 ```
 /
     foo
     bar
 ```
-
 File to directory:
-
 ```
 /
     foo
     bar/
 ```
 ```php
-copy('foo', 'bar')
+# @return File('bar/foo')
+$fs->copy('foo', 'bar')
 ```
 ```
 /
@@ -119,16 +108,15 @@ copy('foo', 'bar')
     bar/
         foo
 ```
-
 Link to link:
-
 ```
 /
     foo
     bar -> foo
 ```
 ```php
-copy('foo', 'wow')
+# @return File('wow')
+$fs->copy('foo', 'wow')
 ```
 ```
 /
@@ -136,7 +124,6 @@ copy('foo', 'wow')
     bar -> foo
     wow -> foo
 ```
-
 Directory to directory:
 ```
 /
@@ -144,7 +131,8 @@ Directory to directory:
         bar
 ```
 ```php
-copy('foo', 'wow')
+# @return FilesystemIterator('wow')
+$fs->copy('foo', 'wow')
 ```
 ```
 /
@@ -153,13 +141,10 @@ copy('foo', 'wow')
     wow/
         bar
 ```
-
-`copyTree`
-----------
-
-`FilesystemPlugin::copyTree($basedir, $target, Finder $finder)`
-
-Uses Symfony's `Finder` component to selectively copy one tree to another e.g.
+`mirror`
+--------
+`mirror($originDir, $targetDir, Traversable $iterator = null, $options = [])`
+Mirror a directory, optionally providing a `Traversable` instance to select or exclude files. Symfony's `Finder` component is really good for this: 
 ```
 /
     foo/
@@ -176,7 +161,8 @@ $finder = new Finder;
 $finder->ignoreVcs()->in('foo');
 
 $fs = new FilesystemPlugin;
-$fs->copyTree('foo', 'wow', $finder);
+# @return FilesystemIterator('wow')
+$fs->mirror('foo', 'wow', $finder);
 ```
 ```
 /
@@ -189,5 +175,3 @@ $fs->copyTree('foo', 'wow', $finder);
         bar
         baz
 ```
-
-`$baseDir` needs to passed so that paths can be mapped from one base directory to another.
