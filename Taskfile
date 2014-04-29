@@ -3,13 +3,11 @@
 require 'vendor/autoload.php';
 
 use Task\Plugin\PhpSpecPlugin;
-use Task\Plugin\WatchPlugin;
 
 $project = new Task\Project('task/filesystem');
 
 $project->inject(function ($container) {
     $container['phpspec'] = new PhpSpecPlugin;
-    $container['watch'] = new WatchPlugin;
 });
 
 $project->addTask('test', ['phpspec', function ($phpspec) {
@@ -17,16 +15,6 @@ $project->addTask('test', ['phpspec', function ($phpspec) {
         ->setConfig($this->getProperty('config', 'phpspec.yml'))
         ->setFormat('pretty')
         ->pipe($this->getOutput());
-}]);
-
-$project->addTask('test.watch', ['watch', 'phpspec', function ($watch, $phpspec) use ($project) {
-    $output = $this->getOutput();
-
-    $watch->init('spec/')
-        ->addListener('modify', function () use ($project, $output) {
-            $project->runTask('test', $output);
-        })
-        ->start();
 }]);
 
 return $project;
