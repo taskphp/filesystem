@@ -53,15 +53,25 @@ class FileSpec extends ObjectBehavior
         expect(file_get_contents($this->path))->toBe('foo');
     }
 
-    function it_should_write_file_content()
+    function it_should_write_new_file_content()
+    {
+        $src = vfsStream::url('tmp').'/src';
+
+        $src = new File($src);
+        $this->write('bar');
+
+        $this->read()->shouldReturn('bar');
+    }
+
+    function it_should_overwrite_file_content()
     {
         $src = vfsStream::url('tmp').'/src';
         file_put_contents($src, 'foo');
 
         $src = new File($src);
-        $this->write($src);
+        $this->write('bar');
 
-        $this->read()->shouldReturn('foo');
+        $this->read()->shouldReturn('bar');
     }
 
     function it_should_append_content()
