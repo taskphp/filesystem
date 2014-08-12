@@ -32,6 +32,7 @@ class File extends \SplFileObject implements ReadableInterface, WritableInterfac
         }
 
         $this->ftruncate(0);
+        $this->rewind();
         $this->fwrite($data);
         return $this;
     }
