@@ -7,6 +7,8 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Task\Plugin\Filesystem\File;
 use Task\Plugin\Filesystem\FilesystemIterator;
+use Task\Plugin\Filesystem\Finder;
+use FilterIterator;
 
 class FilesystemPlugin extends Filesystem implements PluginInterface
 {
@@ -24,6 +26,11 @@ class FilesystemPlugin extends Filesystem implements PluginInterface
     public function ls($dir)
     {
         return new FilesystemIterator($dir);
+    }
+
+    public function find()
+    {
+        return new Finder;
     }
 
     public function copy($source, $target, $override = false)
