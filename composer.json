@@ -11,16 +11,17 @@
     "require": {
         "php": ">=5.5.0",
         "task/plugin": "~1.0",
-        "symfony/filesystem": "~2.6",
-        "symfony/finder": "~2.6"
+        "symfony/filesystem": "~2.5",
+        "symfony/finder": "~2.5"
     },
     "require-dev": {
-        "task/task": "~0.1",
-        "task/phpspec": "~0.1",
+        "phpspec/phpspec": "~2.1",
+        "task/task": "~0.1.0",
+        "task/phpspec": "~0.1.1",
         "bossa/phpspec2-expect": "~1.0",
         "henrikbjorn/phpspec-code-coverage" : "1.0.*@dev",
         "mikey179/vfsStream": "~1.2",
-        "satooshi/php-coveralls": "~0.6"
+        "satooshi/php-coveralls": "~0.6.0"
     },
     "autoload": {
         "psr-4": {
